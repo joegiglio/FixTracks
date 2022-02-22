@@ -8,11 +8,18 @@ from mutagen.flac import FLAC
 #print(directory)
 
 directory = Path("U:/music/Ripped/4 Non Blondes/Bigger, Better, Faster, More!")
-#file = directory / "01 Train.flac"
-file = directory / "06 spaceman.flac"
+file = directory / "01 Train.flac"
+#file = directory / "06 spaceman.flac"
 
 #f = open(file)
 # print(f.read())
 
 audio = FLAC(file)
+print(audio)
+
+audio["album"] = u"JOE1-album"
+audio["artist"] = u"JOE-artist"
+audio.pprint()
+audio.save()
+
 print(audio)
