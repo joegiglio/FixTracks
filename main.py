@@ -37,16 +37,20 @@ def scan_directory(directory_name):
 
     for file in os.listdir(directory):
         if file.endswith(".flac"):
-            print(file)
-
             # WORKS
+            #print(file)
             # flac_file = directory / file
             # print(FLAC(flac_file))
             # print("---")
 
-            flac_file = directory / file
-            if FLAC(flac_file["artist"]) == "Unknown artist":
+            full_path = directory / file
+            flac_file = FLAC(full_path)
+            #print(flac_file["artist"])
+            
+            if (flac_file["artist"][0]) == "Unknown artist":
                 print("File {} needs to be fixed".format(file))
+                flac_file["artist"] = "joe-g"
+                flac_file.save()
 
 
 scan_directory("U:\music\Ripped\EZO\Fire Fire")
