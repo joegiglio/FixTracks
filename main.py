@@ -1,7 +1,14 @@
 import os
+import shutil
 from pathlib import Path
 import mutagen
 from mutagen.flac import FLAC
+
+COPY_FIXED_TRACKS = True
+COPY_BAD_TRACKS = True
+
+COPY_BAD_TRACKS_DIRECTORY = Path("C:/Users/Joe/Documents/py/FixTracks/FixTracks/bad_tracks")
+COPY_FIXED_TRACKS_DIRECTORY = Path("C:/Users/Joe/Documents/py/FixTracks/FixTracks/fixed_tracks")
 
 def singletrack():
 
@@ -53,6 +60,9 @@ def scan_directory(directory_name):
                 #flac_file["artist"] = "joe-g"
                 flac_file.save()
 
+                if COPY_FIXED_TRACKS is True:
+                    copy_fixed_track(full_path)
+
 
 def get_info_from_track_3(directory):
     for file in os.listdir(directory):
@@ -63,5 +73,14 @@ def get_info_from_track_3(directory):
             print("Adding {} to track.".format(artist))
             return artist
 
+
+def copy_fixed_track(full_path):
+    print("Copying {} to {}.".format(full_path, COPY_FIXED_TRACKS_DIRECTORY))
+
+    if not os.path.isdir(COPY_FIXED_TRACKS_DIRECTORY):
+        os.makedirs(COPY_FIXED_TRACKS_DIRECTORY)
+    
+    shutil.copy(full_path, COPY_FIXED_TRACKS_DIRECTORY)
+    print("File copied.")
 
 scan_directory("U:\music\Ripped\EZO\Fire Fire")
