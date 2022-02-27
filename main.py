@@ -57,9 +57,11 @@ def scan_directory(directory_name):
             if (flac_file["artist"][0]) == "Unknown artist":
                 print("File {} needs to be fixed".format(file))
                 # works but make array
-                flac_file["artist"] = get_info_from_track_3(directory)[0]
-                flac_file["albumartist"] = get_info_from_track_3(directory)[0]
-                flac_file["album"] = get_info_from_track_3(directory)[1]
+                fixed_track_data = get_info_from_track_3(directory)
+
+                flac_file["artist"] = fixed_track_data[0]
+                flac_file["albumartist"] = fixed_track_data[0]
+                flac_file["album"] = fixed_track_data[1]
                 flac_file["title"] = file[3:-5]
                 #flac_file["artist"] = "joe-g"
                 flac_file.save()
@@ -69,6 +71,8 @@ def scan_directory(directory_name):
 
 
 def get_info_from_track_3(directory):
+    # I have seen some instances where tracks 1 and 2 are missing data.  I will go to track 3 to retrieve it.
+
     for file in os.listdir(directory):
         if file.startswith("03 "):
             full_path = directory / file
@@ -88,13 +92,4 @@ def copy_fixed_track(full_path):
     shutil.copy(full_path, COPY_FIXED_TRACKS_DIRECTORY)
     print("File copied.")
 
-scan_directory("U:\music\Ripped\EZO\Fire Fire")
-
-def multi_return():
-    print(try_this()[0])
-
-def try_this():
-    return "a", "b", "c"
-
-
-#multi_return()
+#scan_directory("U:\music\Ripped\EZO\Fire Fire")
