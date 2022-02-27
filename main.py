@@ -56,9 +56,10 @@ def scan_directory(directory_name):
             
             if (flac_file["artist"][0]) == "Unknown artist":
                 print("File {} needs to be fixed".format(file))
-                flac_file["artist"] = get_info_from_track_3(directory)
-                flac_file["albumartist"] = get_info_from_track_3(directory)
-                flac_file["album"] = get_info_from_track_3(directory)
+                # works but make array
+                flac_file["artist"] = get_info_from_track_3(directory)[0]
+                flac_file["albumartist"] = get_info_from_track_3(directory)[0]
+                flac_file["album"] = get_info_from_track_3(directory)[1]
                 flac_file["title"] = file[3:-5]
                 #flac_file["artist"] = "joe-g"
                 flac_file.save()
@@ -73,8 +74,9 @@ def get_info_from_track_3(directory):
             full_path = directory / file
             flac_file = FLAC(full_path)
             artist = flac_file["artist"]
-            print("Adding {} to track.".format(artist))
-            return artist
+            album = flac_file["album"]
+            print("Adding artist:{}, album:{} to track.".format(artist, album))
+            return artist, album
 
 
 def copy_fixed_track(full_path):
