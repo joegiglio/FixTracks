@@ -32,8 +32,8 @@ def singletrack():
     audio1["album"] = audio2["album"]
     audio1["title"] = bad_filename[3:-5]
 
-    audio1.pprint()
-    audio1.save()
+    #audio1.pprint()
+    #audio1.save()
 
 #singletrack()
 
@@ -57,6 +57,9 @@ def scan_directory(directory_name):
             if (flac_file["artist"][0]) == "Unknown artist":
                 print("File {} needs to be fixed".format(file))
                 flac_file["artist"] = get_info_from_track_3(directory)
+                flac_file["albumartist"] = get_info_from_track_3(directory)
+                flac_file["album"] = get_info_from_track_3(directory)
+                flac_file["title"] = file[3:-5]
                 #flac_file["artist"] = "joe-g"
                 flac_file.save()
 
@@ -84,3 +87,12 @@ def copy_fixed_track(full_path):
     print("File copied.")
 
 scan_directory("U:\music\Ripped\EZO\Fire Fire")
+
+def multi_return():
+    print(try_this()[0])
+
+def try_this():
+    return "a", "b", "c"
+
+
+#multi_return()
