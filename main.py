@@ -46,6 +46,12 @@ def singletrack():
 #singletrack()
 
 def scan_directory(directory_name):
+    # PSUEODO CODE:
+    # SCAN THIS DIRECTORY
+    # IF FILE, PROCESS AS USUAL
+    # IF DIRECTORY, ENTER THAT DIRECTORY AND START THE LOOP AGAIN
+    # GETTING TRICKY!
+
     print("Scanning {}".format(directory_name))
     logger.info("Scanning %s" % directory_name)
 
@@ -79,8 +85,12 @@ def scan_directory(directory_name):
                     flac_file["title"] = file[3:-5]
 
                     if COPY_FIXED_TRACKS is True:
-                        copy_fixed_track(full_path)
-                        #### flac_file.save()
+                        try:
+                            copy_fixed_track(full_path)
+                            flac_file.save()
+                        except Exception as e:
+                            print("ERROR.  Could not copy fixed track to {} ".format(full_path))    
+                            logger.critical("ERROR.  Could not copy fixed track to {} ".format(full_path))
                 except Exception as e:
                     print("ERROR.  Track 3 may not exist.  Can not fix {} ".format(full_path))    
                     logger.critical("ERROR.  Track 3 may not exist.  Can not fix {} ".format(full_path))
