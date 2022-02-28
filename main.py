@@ -51,7 +51,10 @@ def scan_directory(directory_name):
 
     directory = Path(directory_name)
 
+    errors_found = False
+
     for file in os.listdir(directory):
+        
         if file.endswith(".flac"):
             # WORKS
             #print(file)
@@ -64,6 +67,7 @@ def scan_directory(directory_name):
             #print(flac_file["artist"])
             
             if (flac_file["artist"][0]) == "Unknown artist":
+                errors_found = True
                 print("File {} needs to be fixed".format(file))
                 logger.info("File %s needs to be fixed" % file)
                 # works but make array
@@ -78,6 +82,10 @@ def scan_directory(directory_name):
 
                 if COPY_FIXED_TRACKS is True:
                     copy_fixed_track(full_path)
+            
+    if errors_found is False:
+        print ("No errors found in directory.")
+        logger.info("No errors found in directory.")
 
 
 def get_info_from_track_3(directory):
