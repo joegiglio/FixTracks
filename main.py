@@ -1,5 +1,6 @@
 import os
 import shutil
+import logging
 from pathlib import Path
 import mutagen
 from mutagen.flac import FLAC
@@ -9,6 +10,13 @@ COPY_BAD_TRACKS = True
 
 COPY_BAD_TRACKS_DIRECTORY = Path("C:/Users/Joe/Documents/py/FixTracks/FixTracks/bad_tracks")
 COPY_FIXED_TRACKS_DIRECTORY = Path("C:/Users/Joe/Documents/py/FixTracks/FixTracks/fixed_tracks")
+
+LOG_FORMAT = "%(levelname)s, %(asctime)s, %(message)s" 
+
+logging.basicConfig(filename = Path("./logging.txt"), level=logging.DEBUG, format=LOG_FORMAT)
+logger = logging.getLogger()
+
+logger.info("=== Script started ===")
 
 def singletrack():
 
@@ -39,6 +47,7 @@ def singletrack():
 
 def scan_directory(directory_name):
     print("Scanning {}".format(directory_name))
+    logger.info("Scanning %s" % directory_name)
 
     directory = Path(directory_name)
 
@@ -56,6 +65,7 @@ def scan_directory(directory_name):
             
             if (flac_file["artist"][0]) == "Unknown artist":
                 print("File {} needs to be fixed".format(file))
+                logger.info("File %s needs to be fixed" % file)
                 # works but make array
                 fixed_track_data = get_info_from_track_3(directory)
 
@@ -80,16 +90,23 @@ def get_info_from_track_3(directory):
             artist = flac_file["artist"]
             album = flac_file["album"]
             print("Adding artist:{}, album:{} to track.".format(artist, album))
+            logger.info("Adding artist: %s, album: %s to track" % (artist, album))
             return artist, album
 
 
 def copy_fixed_track(full_path):
     print("Copying {} to {}.".format(full_path, COPY_FIXED_TRACKS_DIRECTORY))
+    logger.info("Copying %s to %s" % (full_path, COPY_FIXED_TRACKS_DIRECTORY))
 
     if not os.path.isdir(COPY_FIXED_TRACKS_DIRECTORY):
         os.makedirs(COPY_FIXED_TRACKS_DIRECTORY)
     
     shutil.copy(full_path, COPY_FIXED_TRACKS_DIRECTORY)
     print("File copied.")
+    logger.info("File copied.")
 
-#scan_directory("U:\music\Ripped\EZO\Fire Fire")
+def finalize():
+    logger.info("=== Script ended ===")
+
+scan_directory("U:\music\Ripped\EZO\Fire Fire")
+finalize()
