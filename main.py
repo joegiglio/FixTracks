@@ -70,18 +70,21 @@ def scan_directory(directory_name):
                 errors_found = True
                 print("File {} needs to be fixed".format(file))
                 logger.info("File %s needs to be fixed" % file)
-                # works but make array
-                fixed_track_data = get_info_from_track_3(directory)
+                
+                try:
+                    fixed_track_data = get_info_from_track_3(directory)
+                    flac_file["artist"] = fixed_track_data[0]
+                    flac_file["albumartist"] = fixed_track_data[0]
+                    flac_file["album"] = fixed_track_data[1]
+                    flac_file["title"] = file[3:-5]
 
-                flac_file["artist"] = fixed_track_data[0]
-                flac_file["albumartist"] = fixed_track_data[0]
-                flac_file["album"] = fixed_track_data[1]
-                flac_file["title"] = file[3:-5]
-                #flac_file["artist"] = "joe-g"
-                flac_file.save()
-
-                if COPY_FIXED_TRACKS is True:
-                    copy_fixed_track(full_path)
+                    if COPY_FIXED_TRACKS is True:
+                        copy_fixed_track(full_path)
+                        #### flac_file.save()
+                except Exception as e:
+                    print("ERROR.  Track 3 may not exist.  Can not fix {} ".format(full_path))    
+                    logger.critical("ERROR.  Track 3 may not exist.  Can not fix {} ".format(full_path))
+                
             
     if errors_found is False:
         print ("No errors found in directory.")
@@ -92,6 +95,7 @@ def get_info_from_track_3(directory):
     # I have seen some instances where tracks 1 and 2 are missing data.  I will go to track 3 to retrieve it.
 
     for file in os.listdir(directory):
+        
         if file.startswith("03 "):
             full_path = directory / file
             flac_file = FLAC(full_path)
@@ -100,6 +104,9 @@ def get_info_from_track_3(directory):
             print("Adding artist:{}, album:{} to track.".format(artist, album))
             logger.info("Adding artist: %s, album: %s to track" % (artist, album))
             return artist, album
+        
+        print("Track 03 not found.  Can not fix {}.".format(flac_file))
+        logger.fatal("Track 03 not found.  Can not fix {}.".format(flac_file)) 
 
 
 def copy_fixed_track(full_path):
@@ -116,5 +123,19 @@ def copy_fixed_track(full_path):
 def finalize():
     logger.info("=== Script ended ===")
 
-scan_directory("U:\music\Ripped\EZO\Fire Fire")
-finalize()
+#scan_directory("U:\music\Ripped\EZO\Fire Fire")
+#finalize()
+
+def directory_dump(path):
+    print (path)
+
+    for entry in os.scandir(path):
+        if entry.is_dir():
+            print("{} is dir".format(Path(entry)))
+            scan_directory(Path(entry))
+        elif entry.is_file():
+            print("{} is file".format(Path(entry)))
+
+directory_dump(Path("U:\music\Ripped"))
+
+
