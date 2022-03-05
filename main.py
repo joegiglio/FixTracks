@@ -209,6 +209,19 @@ def copy_fixed_track(full_path):
     print("File copied.")
     logger.info("File copied.")
 
+
+def copy_bad_track(full_path):
+    print("Copying {} to {}.".format(full_path, COPY_BAD_TRACKS_DIRECTORY))
+    logger.info("Copying %s to %s" % (full_path, COPY_BAD_TRACKS_DIRECTORY))
+
+    if not os.path.isdir(COPY_BAD_TRACKS_DIRECTORY):
+        os.makedirs(COPY_BAD_TRACKS_DIRECTORY)
+    
+    shutil.copy(full_path, COPY_BAD_TRACKS_DIRECTORY)
+    print("File copied.")
+    logger.info("File copied.")
+
+
 def finalize():
     logger.info("=== Script ended ===")
 
@@ -234,6 +247,7 @@ def dir_test(path):
 
 def walk_test(path):
     count = 0
+    error_count = 0
     print (path)
 
     for (root, dirs, files) in os.walk(path):
@@ -245,7 +259,7 @@ def walk_test(path):
             if file.endswith(".flac"):
                 # print(file)
                 # print(root)
-                # count = count +1
+                count = count +1
 
                 full_path = Path(root + "/" + "/" + file)
                 flac_file = FLAC(full_path)
@@ -253,10 +267,18 @@ def walk_test(path):
             
             if (flac_file["artist"][0]) == "Unknown artist":
                 errors_found = True
+                error_count = error_count + 1
                 print("File {} needs to be fixed".format(full_path))
                 logger.info("File %s needs to be fixed" % file)
 
-    print("Found {} TOTAL .FLAC files".format(count))
+                if COPY_BAD_TRACKS is True:
+                    try:
+                        copy_bad_track(full_path)
+                    except Exception as e:
+                        print("ERROR.  Could not copy bad track to {} ".format(full_path))    
+                        logger.critical("ERROR.  Could not copy bad track to {} ".format(full_path))
+
+    print("Found {} TOTAL .FLAC files. {} errors.".format(count, error_count))
 
 
 #directory_dump(Path("U:\music\Ripped"))
