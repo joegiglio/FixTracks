@@ -78,7 +78,9 @@ def scan_directory_old(directory_name):
                 logger.info("File %s needs to be fixed" % file)
                 
                 try:
+                    print("A")
                     fixed_track_data = get_info_from_track_3(directory)
+                    print(fixed_track_data, directory)
                     flac_file["artist"] = fixed_track_data[0]
                     flac_file["albumartist"] = fixed_track_data[0]
                     flac_file["album"] = fixed_track_data[1]
@@ -92,6 +94,8 @@ def scan_directory_old(directory_name):
                             print("ERROR.  Could not copy fixed track to {} ".format(full_path))    
                             logger.critical("ERROR.  Could not copy fixed track to {} ".format(full_path))
                 except Exception as e:
+                    print("B")
+                    print(fixed_track_data, directory)
                     print("ERROR.  Track 3 may not exist.  Can not fix {} ".format(full_path))    
                     logger.critical("ERROR.  Track 3 may not exist.  Can not fix {} ".format(full_path))
                 
@@ -112,58 +116,53 @@ def scan_directory(directory_name):
 
     directory = Path(directory_name)
 
-    errors_found = False
-
     for entry in os.scandir(directory):
         if entry.is_file():
             if entry.name.endswith(".flac"):
-                process_flac_track(Path(entry))
+                process_flac_track(Path(entry), directory)
                
         elif entry.is_dir():
             process_directory(Path(entry))
         
-    #     if file.endswith(".flac"):
-    #         # WORKS
-    #         #print(file)
-    #         # flac_file = directory / file
-    #         # print(FLAC(flac_file))
-    #         # print("---")
+    
+def process_flac_track(entry, directory):
+    #print("found a flac! {}".format(Path(entry)))
+    #print(entry)
 
-    #         full_path = directory / file
-    #         flac_file = FLAC(full_path)
-    #         #print(flac_file["artist"])
+    errors_found = False
+
+    full_path = entry
+    flac_file = FLAC(full_path)
+    #print(flac_file["artist"])
             
-    #         if (flac_file["artist"][0]) == "Unknown artist":
-    #             errors_found = True
-    #             print("File {} needs to be fixed".format(file))
-    #             logger.info("File %s needs to be fixed" % file)
+    if (flac_file["artist"][0]) == "Unknown artist":
+        errors_found = True
+        print("File {} needs to be fixed".format(entry))
+        logger.info("File %s needs to be fixed" % entry)
                 
-    #             try:
-    #                 fixed_track_data = get_info_from_track_3(directory)
-    #                 flac_file["artist"] = fixed_track_data[0]
-    #                 flac_file["albumartist"] = fixed_track_data[0]
-    #                 flac_file["album"] = fixed_track_data[1]
-    #                 flac_file["title"] = file[3:-5]
+        try:
+            fixed_track_data = get_info_from_track_3(directory)
+            print(fixed_track_data, directory)
+            flac_file["artist"] = fixed_track_data[0]
+            flac_file["albumartist"] = fixed_track_data[0]
+            flac_file["album"] = fixed_track_data[1]
+            flac_file["title"] = entry[3:-5]
 
-    #                 if COPY_FIXED_TRACKS is True:
-    #                     try:
-    #                         copy_fixed_track(full_path)
-    #                         flac_file.save()
-    #                     except Exception as e:
-    #                         print("ERROR.  Could not copy fixed track to {} ".format(full_path))    
-    #                         logger.critical("ERROR.  Could not copy fixed track to {} ".format(full_path))
-    #             except Exception as e:
-    #                 print("ERROR.  Track 3 may not exist.  Can not fix {} ".format(full_path))    
-    #                 logger.critical("ERROR.  Track 3 may not exist.  Can not fix {} ".format(full_path))
-                
-            
-    # if errors_found is False:
-    #     print ("No errors found in directory.")
-    #     logger.info("No errors found in directory.")
-
-
-def process_flac_track(entry):
-    print("found a flac! {}".format(Path(entry)))
+            if COPY_FIXED_TRACKS is True:
+                try:
+                    copy_fixed_track(full_path)
+                    flac_file.save()
+                except Exception as e:
+                    print("ERROR.  Could not copy fixed track to {} ".format(full_path))    
+                    logger.critical("ERROR.  Could not copy fixed track to {} ".format(full_path))
+        except Exception as e:
+            print(directory)
+            print("xERROR.  Track 3 may not exist.  Can not fix {} ".format(full_path))    
+            logger.critical("ERROR.  Track 3 may not exist.  Can not fix {} ".format(full_path))
+          
+    if errors_found is False:
+        print ("No errors found in directory.")
+        logger.info("No errors found in directory.")
 
 
 def process_directory(entry):
@@ -172,17 +171,28 @@ def process_directory(entry):
 
 def get_info_from_track_3(directory):
     # I have seen some instances where tracks 1 and 2 are missing data.  I will go to track 3 to retrieve it.
+    print("AAAAA")
+    print(directory)
 
+    counter = 0
     for file in os.listdir(directory):
-        
+        counter += 1
+        print(counter)
+        print(file)
+        print(os.listdir(directory))
+                           
         if file.startswith("03 "):
             full_path = directory / file
             flac_file = FLAC(full_path)
+            print("debug!")
+            print(full_path, flac_file)
             artist = flac_file["artist"]
             album = flac_file["album"]
             print("Adding artist:{}, album:{} to track.".format(artist, album))
             logger.info("Adding artist: %s, album: %s to track" % (artist, album))
             return artist, album
+        else:
+            print("debug - not 03")
         
         print("Track 03 not found.  Can not fix {}.".format(flac_file))
         logger.fatal("Track 03 not found.  Can not fix {}.".format(flac_file)) 
@@ -212,9 +222,49 @@ def directory_dump(path):
         elif entry.is_file():
             print("{} is file".format(Path(entry)))
 
+
+def dir_test(path):
+    print (path)
+
+    for file in os.listdir(path):
+        #print(file)
+        if file.startswith("W"):
+            print(file)
+
+
+def walk_test(path):
+    count = 0
+    print (path)
+
+    for (root, dirs, files) in os.walk(path):
+        #root is the current directory
+        #print("Found {} .FLAC files".format(len(files)))
+        #print(files)
+        
+        for file in files:
+            if file.endswith(".flac"):
+                # print(file)
+                # print(root)
+                # count = count +1
+
+                full_path = Path(root + "/" + "/" + file)
+                flac_file = FLAC(full_path)
+                #print(flac_file["artist"])
+            
+            if (flac_file["artist"][0]) == "Unknown artist":
+                errors_found = True
+                print("File {} needs to be fixed".format(full_path))
+                logger.info("File %s needs to be fixed" % file)
+
+    print("Found {} TOTAL .FLAC files".format(count))
+
+
 #directory_dump(Path("U:\music\Ripped"))
 #scan_directory("U:\music\Ripped\EZO\Fire Fire")
-scan_directory("U:\music\Ripped")
+#scan_directory("U:\music\Ripped")
+#dir_test("U:\music\Ripped")
+walk_test("U:\music\Ripped")
+
 finalize()
 
 
