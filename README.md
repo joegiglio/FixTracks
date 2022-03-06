@@ -11,6 +11,10 @@ But what to do about that library of albums that have incorrect data?  This proj
 
 This script was written with Python 3.10.2.  It uses the Mutagen package which can be installed following the steps below.  
 
+**Technical Stuff**
+
+I built this script over time and left most of the test code behind for posterity.  If you are interested in learning from the code, open the main.py file and scroll to the bottom.  The script calls the "startup" and then "main" functions.
+
 **Instructions**
 
 1. Clone project
