@@ -6,14 +6,14 @@ from pathlib import Path
 import mutagen
 from mutagen.flac import FLAC
 
-DRY_RUN = True  # If True, will not save fixed file.  Use for debugging and testing.
-COPY_FIXED_TRACKS = False
-COPY_BAD_TRACKS = False
+TRACKS_LOCATION = "U:\music\Ripped"
 
-COPY_BAD_TRACKS_DIRECTORY = Path("C:/Users/Joe/Documents/py/FixTracks/FixTracks/bad_tracks")
+DRY_RUN = False  # If True, script will not save fixed file.  Use for debugging and testing.
+COPY_FIXED_TRACKS = True
 COPY_FIXED_TRACKS_DIRECTORY = Path("C:/Users/Joe/Documents/py/FixTracks/FixTracks/fixed_tracks")
 
-fixed_tracks = []
+COPY_BAD_TRACKS = True
+COPY_BAD_TRACKS_DIRECTORY = Path("C:/Users/Joe/Documents/py/FixTracks/FixTracks/bad_tracks")
 
 LOG_FORMAT = "%(levelname)s, %(asctime)s, %(message)s" 
 
@@ -21,7 +21,9 @@ logfile_name = "./log-{}.txt".format(time.time())
 logging.basicConfig(filename = Path(logfile_name), level=logging.DEBUG, format=LOG_FORMAT)
 logger = logging.getLogger()
 
-# Functions that being with debug_ are not in use.  They were used as building blocks to the final script.
+fixed_tracks = []
+
+# Functions that begin with debug_ are not in use.  They were used as building blocks to the final script.
 
 def debug_singletrack():
 
@@ -219,16 +221,19 @@ def startup():
 def shutdown(count, error_count):
     print("==========")
     print("Found {} TOTAL .FLAC files. {} errors.".format(count, error_count))
-    print("==========")
-    print("These tracks were fixed:")
+    
+    if error_count > 0:
+        print("==========")
+        print("These tracks were fixed:")
 
     for item in fixed_tracks:
         print(item)
     
-    logger.info("==========")
     logger.info("Found {} TOTAL .FLAC files. {} errors.".format(count, error_count))
 
-    logger.info("These tracks were fixed:")
+    if error_count > 0:
+       logger.info("==========")
+       logger.info("These tracks were fixed:")
 
     for item in fixed_tracks:
         logger.info(item)
@@ -243,7 +248,6 @@ def main(path):
 
     for (root, dirs, files) in os.walk(path):
         #root is the current directory
-        #print("Found {} .FLAC files".format(len(files)))
         #print(files)
           
         for file in files:
@@ -257,7 +261,6 @@ def main(path):
                 #print(flac_file["artist"])
                             
             if (flac_file["artist"][0]) == "Unknown artist":
-                errors_found = True
                 error_count = error_count + 1
                 
                 print("==========")
@@ -289,19 +292,26 @@ def main(path):
                         flac_file.save()
                         print("File {} fixed".format(full_path))
                         logger.info("File %s fixed" % full_path)
+
+                        if COPY_FIXED_TRACKS is True:
+                            try:
+                                copy_fixed_track(full_path)
+                            except Exception as e:
+                                print("ERROR.  Could not copy fixed track to {} ".format(full_path))    
+                                logger.critical("ERROR.  Could not copy fixed track to {} ".format(full_path))
+
                     else:
                         print("Dry run.  Logging only.")
                         logger.info("Dry run.  Logging only.")
-                        #copy_fixed_track(full_path)
+                     
                 except:
                     print("Unable to find track 03 in {}.  Can not fix track {}.".format(root, full_path))
                     logger.critical("Unable to find track 03 in {}.  Can not fix track {}.".format(root, full_path))
-                
-
+           
     shutdown(count, error_count)
 
 startup()
-main("U:\music\Ripped")
+main(TRACKS_LOCATION)
 #shutdown() - now called from main()
 
 
