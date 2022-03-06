@@ -13,6 +13,8 @@ COPY_BAD_TRACKS = False
 COPY_BAD_TRACKS_DIRECTORY = Path("C:/Users/Joe/Documents/py/FixTracks/FixTracks/bad_tracks")
 COPY_FIXED_TRACKS_DIRECTORY = Path("C:/Users/Joe/Documents/py/FixTracks/FixTracks/fixed_tracks")
 
+fixed_tracks = []
+
 LOG_FORMAT = "%(levelname)s, %(asctime)s, %(message)s" 
 
 logfile_name = "./log-{}.txt".format(time.time())
@@ -214,7 +216,23 @@ def startup():
     logger.info("=== Script started ===")
     logger.info("Dry run: {}".format(DRY_RUN))
 
-def shutdown():
+def shutdown(count, error_count):
+    print("==========")
+    print("Found {} TOTAL .FLAC files. {} errors.".format(count, error_count))
+    print("==========")
+    print("These tracks were fixed:")
+
+    for item in fixed_tracks:
+        print(item)
+    
+    logger.info("==========")
+    logger.info("Found {} TOTAL .FLAC files. {} errors.".format(count, error_count))
+
+    logger.info("These tracks were fixed:")
+
+    for item in fixed_tracks:
+        logger.info(item)
+
     logger.info("=== Script ended ===")
 
 def main(path):
@@ -227,7 +245,7 @@ def main(path):
         #root is the current directory
         #print("Found {} .FLAC files".format(len(files)))
         #print(files)
-        
+          
         for file in files:
             if file.endswith(".flac"):
                 # print(file)
@@ -259,6 +277,8 @@ def main(path):
                 try:
                     fixed_track_data = get_info_from_track_3(root)
                     print(fixed_track_data, root)
+
+                    fixed_tracks.append(full_path)
                     
                     flac_file["artist"] = fixed_track_data[0]
                     flac_file["albumartist"] = fixed_track_data[0]
@@ -278,11 +298,11 @@ def main(path):
                     logger.critical("Unable to find track 03 in {}.  Can not fix track {}.".format(root, full_path))
                 
 
-    print("Found {} TOTAL .FLAC files. {} errors.".format(count, error_count))
+    shutdown(count, error_count)
 
 startup()
 main("U:\music\Ripped")
-shutdown()
+#shutdown() - now called from main()
 
 
 
