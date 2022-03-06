@@ -1,5 +1,5 @@
 /venv
 /fixed_tracks
 /bad_tracks
-logging.txt
+log-*
 .vscode/launch.json
