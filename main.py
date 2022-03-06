@@ -77,8 +77,8 @@ def debug_scan_directory_old(directory_name):
             
             if (flac_file["artist"][0]) == "Unknown artist":
                 errors_found = True
-                print("File {} needs to be fixed".format(file))
-                logger.info("File %s needs to be fixed" % file)
+                print("File {} needs to be fixed ({})".format(file, full_path))
+                logger.info("File %s needs to be fixed ({})" % file, full_path)
                 
                 try:
                     fixed_track_data = get_info_from_track_3(directory)
@@ -245,8 +245,8 @@ def main(path):
                 print("==========")
                 logger.info("==========")
                 
-                print("File {} needs to be fixed".format(full_path))
-                logger.info("File %s needs to be fixed" % file)
+                print("File {} needs to be fixed ({})".format(file, full_path))
+                logger.info("File %s needs to be fixed (%s)" % (file, full_path))
 
                 if COPY_BAD_TRACKS is True:
                     try:
