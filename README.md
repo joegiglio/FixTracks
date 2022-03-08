@@ -7,6 +7,10 @@ The workaround is to not let Windows Media Player auto rip CDs.  You need to ins
 
 But what to do about that library of albums that have incorrect data?  This project fixes it... at least for FLAC files.  I understand MP3, and perhaps other formats, have the same problem.
 
+There are some other utilities out there that will allow you to easily change missing/incorrect metadata but they require a manual process.  THIS script will find any FLAC files with missing metadata and will copy that data (album, artist) from track 03 in the same folder.  It will also fix the missing "Title" from FLAC files. 
+
+SPECIAL NOTE: Due to the nature of this script, albums from Various Artists might not have the correct artist, even after the running this script.
+
 **Requirements**
 
 This script was written with Python 3.10.2.  It uses the Mutagen package which can be installed following the steps below.  
@@ -34,8 +38,6 @@ _COPY_BAD_TRACKS_DIRECTORY_ - Used in conjunction with the COPY_BAD_TRACKS setti
 6.  The script will output to the screen and a "log-".txt file will be created.  Every time you run the script, a new log file will be generated. 
 7.  Closely review the log file for anything odd.  The script is written to pull the file metadata file from the third track in a directory which should be safe.  However, I did have one example where the FIRST FIVE tracks did not have the metadata.  Manually fixing file 3 and running the script again fixed the rest of the files.
 8.  Once you are satisfied with the cleanup, you can re-upload the albums to a service such as Youtube Music.  I have come to learn that uploading just the file will stick the tracks at the END of the album.  This is usually not what you want since the first track is usually the broken one.  To avoid this, try re-uploading the ENTIRE album.  This is what worked for me!  If that STILL doesn't work, try deleting the album from Youtube Music and then re-uploading it.  
-
-SPECIAL NOTE: Albums from Various Artists might not have the song artist, even after the running this script.  Some CDs just don't seem to have that data.
 
 I built this script over time and left most of the test code behind for posterity.  If you are interested in learning from the code, open the main.py file and scroll to the bottom.  The script calls the "startup" and then "main" functions.
 
