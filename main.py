@@ -313,8 +313,8 @@ def main(path):
     shutdown(count, error_count)
 
 startup()
-#main(TRACKS_LOCATION)
-debug_singletrack()
+main(TRACKS_LOCATION)
+#debug_singletrack()
 #shutdown() - now called from main()
 
 
