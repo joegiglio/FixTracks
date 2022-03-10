@@ -8,11 +8,11 @@ from mutagen.flac import FLAC
 
 TRACKS_LOCATION = "U:\music\Ripped"
 
-DRY_RUN = False  # If True, script will not save fixed file.  Use for debugging and testing.
-COPY_FIXED_TRACKS = True
+DRY_RUN = True  # If True, script will not save fixed file.  Use for debugging and testing.
+COPY_FIXED_TRACKS = False
 COPY_FIXED_TRACKS_DIRECTORY = Path("C:/Users/Joe/Documents/py/FixTracks/FixTracks/fixed_tracks")
 
-COPY_BAD_TRACKS = True
+COPY_BAD_TRACKS = False
 COPY_BAD_TRACKS_DIRECTORY = Path("C:/Users/Joe/Documents/py/FixTracks/FixTracks/bad_tracks")
 
 LOG_FORMAT = "%(levelname)s, %(asctime)s, %(message)s" 
@@ -36,7 +36,9 @@ def debug_singletrack():
 
     print("---")
 
-    good_file = file = directory / "02 Night Crawler.flac"
+    bad_filename = "02 Night Crawler.flac" 
+    good_file = directory / bad_filename
+    
     audio2 = FLAC(good_file)
     print(audio2)
 
@@ -47,7 +49,7 @@ def debug_singletrack():
     audio1["album"] = audio2["album"]
     audio1["title"] = bad_filename[3:-5]
 
-    #audio1.pprint()
+    audio1.pprint()
     #audio1.save()
 
 #debug_singletrack()
@@ -311,7 +313,8 @@ def main(path):
     shutdown(count, error_count)
 
 startup()
-main(TRACKS_LOCATION)
+#main(TRACKS_LOCATION)
+debug_singletrack()
 #shutdown() - now called from main()
 
 
